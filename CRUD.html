@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>CRUD</title>
+    <style>
+        body {
+            text-align: center;
+        }
+
+        h1 {
+            border-bottom: 2px solid rgb(226, 237, 127);
+        }
+
+        ul {
+            width: 50%;
+            margin: 0 auto;
+        }
+
+        li {
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            font-size: large;
+            padding: 5px;
+            margin: 8px;
+            border-bottom: 1px solid rgb(229, 181, 181);
+        }
+
+        button {
+            border: 0;
+            border-radius: 3%;
+            padding: 5px 10px;
+        }
+
+        #input {
+            border: 1px solid gold;
+        }
+
+        #addBtn {
+            background-color: rgb(209, 207, 238);
+        }
+
+        .deleteBtn {
+            background-color: #f4a0a0;
+        }
+
+        .saveBtn {
+            background-color: #fbff92;
+        }
+
+        .editBtn {
+            background-color: #d9eef3;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>CRUD</h1>
+    <h3>C = create, R = read, U = update, D = delete</h3>
+    <ul id="list"></ul><button id="addBtn">Add</button>
+    <script type="text/javascript">
+        const addBtn = document.querySelector('#addBtn');
+        let arr = [];
+        let editId = "";
+        const isEdit = (id, name) => {
+            if (editId === id) {
+                return `<input type="text" id="input${id}" value="${catchName}" />
+	                      <button id="save${id}" class="saveBtn">Save<\/button>`;
+            } else {
+                return name;
+            }
+        };
+
+        let catchName = "";
+
+        const render = () => {
+            const wrapper = document.querySelector('#list');
+            //render
+            const model = arr.map((item) => {
+                return `<li>
+	                   <button id="${item.id}" class="deleteBtn">X<\/button> 
+	                   ${isEdit(item.id, item.name)}
+	                   <button id="edit${item.id}" class="editBtn">Edit<\/button>
+	                   <\/li>`;
+            })
+                .join(" ");
+            wrapper.innerHTML = model;
+
+            //delete
+            arr.forEach((item) => {
+                document.getElementById(item.id).addEventListener('click', () => {
+                    arr = arr.filter((p) => p.id !== item.id);
+                    render();
+                });
+            });
+
+            //update
+            arr.forEach((item) => {
+                const editBtn = document.querySelector(`#edit${item.id}`).addEventListener('click', () => {
+                    editId = item.id;
+                    catchName = item.name;
+                    render();
+                });
+            });
+
+            //after update
+            arr.forEach((item) => {
+                const saved = document.querySelector(`#save${item.id}`);
+                if (saved) {
+                    saved.addEventListener('click', () => {
+                        if (item.id === editId) {
+                            const input = document.querySelector(`#input${item.id}`);
+                            item.name = input.value;
+                            editId = "";
+                        }
+                        render();
+                    });
+                }
+            });
+        };
+        render();
+
+        //add
+        addBtn.addEventListener('click', () => {
+            arr.push({
+                id: self.crypto.randomUUID(),
+                name: self.crypto.randomUUID().substring(0, 5)
+            });
+            render();
+        });
+    </script>
+</body>
+
+</html>
